@@ -1,0 +1,38 @@
+version: "3.9"
+
+services:
+
+  db:
+    image: mysql:8.0
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: MyR00tMySQLPa$$5w0rD
+      MYSQL_DATABASE: MyWordPressDatabaseName
+      MYSQL_USER: MyWordPressUser
+      MYSQL_PASSWORD: Pa$$5w0rD
+    volumes:
+      - ./db_files:/var/lib/mysql
+      # Load the initial SQL dump into the DB when it is created.
+      # This only runs once if the DB is empty.
+      # - ${SQL_DUMP_FILE}:/docker-entrypoint-initdb.d/dump.sql
+
+
+  wordpress:
+    depends_on:
+      - db
+    build: 
+      context: .
+      dockerfile: Dockerfile
+    restart: always
+    ports:
+      - "8000:80"
+    environment:
+      WORDPRESS_DB_HOST: db:3306
+      WORDPRESS_DB_USER: MyWordPressUser
+      WORDPRESS_DB_PASSWORD: Pa$$5w0rD
+      WORDPRESS_DB_NAME: MyWordPressDatabaseName
+    volumes:
+      - ./wordpress-project:/var/www/html
+
+volumes:
+  mysql: {}
